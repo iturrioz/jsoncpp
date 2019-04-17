@@ -1001,8 +1001,7 @@ void BuiltStyledStreamWriter::writeArrayValue(Value const& value) {
   else {
     bool isMultiLine = (cs_ == CommentStyle::All) || isMultilineArray(value);
     if (isMultiLine) {
-      writeWithIndent("[");
-      indent();
+      *sout_ << "[";
       bool hasChildValue = !childValues_.empty();
       unsigned index = 0;
       for (;;) {
@@ -1011,8 +1010,6 @@ void BuiltStyledStreamWriter::writeArrayValue(Value const& value) {
         if (hasChildValue)
           writeWithIndent(childValues_[index]);
         else {
-          if (!indented_)
-            writeIndent();
           indented_ = true;
           writeValue(childValue);
           indented_ = false;
@@ -1021,11 +1018,10 @@ void BuiltStyledStreamWriter::writeArrayValue(Value const& value) {
           writeCommentAfterValueOnSameLine(childValue);
           break;
         }
-        *sout_ << ",";
+        *sout_ << ", ";
         writeCommentAfterValueOnSameLine(childValue);
       }
-      unindent();
-      writeWithIndent("]");
+      *sout_ << "]";
     } else // output on a single line
     {
       assert(childValues_.size() == size);
